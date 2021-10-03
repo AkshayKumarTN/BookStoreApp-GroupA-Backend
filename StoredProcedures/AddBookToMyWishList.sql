@@ -1,4 +1,4 @@
-Alter PROCEDURE [dbo].[AddBookToMyWishList]
+alter PROCEDURE [dbo].[AddBookToMyWishList]
 	@UserId int,
 	@BookId int
 	AS

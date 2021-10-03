@@ -43,10 +43,10 @@ namespace Repository.Repository
                             
                             getMyOrders.OrderId = Convert.ToInt32(sqlDataReader["OrderId"]);
                         }
-                        if (sqlDataReader.HasRows == false)
-                        {
-                            throw new Exception("Order not placed");
-                        }
+                        //if (sqlDataReader.HasRows == false)
+                        //{
+                            //throw new Exception("Order not placed");
+                        //}
                         return getMyOrders;
                     }
                 }
