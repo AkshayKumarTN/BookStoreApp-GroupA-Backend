@@ -53,5 +53,49 @@ namespace Repository.Repository
                 connection.Close();
             }
         }
+        public List<FeedBackModel> GetFeedBack(int bookId)
+        {
+            try
+            {
+                connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
+                using (connection)
+                {
+                    connection.Open();
+                    SqlCommand cmd = new SqlCommand("[dbo].[GetFeedBack]", connection)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+                    cmd.Parameters.AddWithValue("@BookId", bookId);
+                    SqlDataReader sqlDataReader = cmd.ExecuteReader();
+
+                    List<FeedBackModel> feedBackList = new List<FeedBackModel>();
+
+                    while (sqlDataReader.Read())
+                    {
+                        FeedBackModel feedBackData = new FeedBackModel();
+                        feedBackData.BookId = Convert.ToInt32(sqlDataReader["BookId"]);
+                        feedBackData.UserName = sqlDataReader["UserName"].ToString();
+                        feedBackData.Rating = Convert.ToInt32(sqlDataReader["Rating"]);
+                        feedBackData.Comment = sqlDataReader["Comments"].ToString();
+                        feedBackList.Add(feedBackData);
+                    }
+                    if (sqlDataReader.HasRows == false)
+                    {
+                        throw new Exception("No FeedBack available");
+                    }
+                    return feedBackList;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+
     }
 }

@@ -8,5 +8,6 @@ namespace Manager.Interface
    public interface IFeedbackManager
     {
         bool AddFeedBack(FeedBackModel feedBackData);
+        List<FeedBackModel> GetFeedBack(int bookId);
     }
 }

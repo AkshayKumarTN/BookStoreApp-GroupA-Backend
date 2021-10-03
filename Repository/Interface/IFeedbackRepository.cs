@@ -8,5 +8,6 @@ namespace Repository.Interface
     public interface IFeedbackRepository
     {
         bool AddFeedBack(FeedBackModel feedBackData);
+        List<FeedBackModel> GetFeedBack(int bookId);
     }
 }
