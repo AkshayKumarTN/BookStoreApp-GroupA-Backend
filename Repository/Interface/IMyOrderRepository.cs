@@ -7,7 +7,7 @@ namespace Repository.Interface
 {
     public interface IMyOrderRepository
     {
-        GetMyOrdersModel AddOrder(MyOrdersModel orderData);
+        List<int> AddOrder(List<MyOrdersModel> orderData);
         List<GetMyOrdersModel> GetMyOrders(int userId);
     }
 }

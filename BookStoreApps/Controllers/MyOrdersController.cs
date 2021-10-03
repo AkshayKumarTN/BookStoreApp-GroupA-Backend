@@ -22,14 +22,14 @@ namespace BookStoreApps.Controllers
 
         [HttpPost]
         [Route("Order")]
-        public IActionResult AddOrder([FromBody] MyOrdersModel orderData)
+        public IActionResult AddOrder([FromBody] List<MyOrdersModel> orderData)
         {
             try
             {
-                GetMyOrdersModel result = this.manager.AddOrder(orderData);
+                List<int> result = this.manager.AddOrder(orderData);
                 if (result != null)
                 {
-                    return this.Ok(new { Status = true, Message = "Order Added Successfully", result.OrderId });
+                    return this.Ok(new { Status = true, Message = "Order Added Successfully", result });
                 }
                 else
                 {
