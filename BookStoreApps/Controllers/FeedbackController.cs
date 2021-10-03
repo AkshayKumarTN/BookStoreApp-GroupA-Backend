@@ -41,5 +41,27 @@ namespace BookStoreApps.Controllers
                 return this.NotFound(new ResponseModel<string>() { Status = false, Message = ex.Message });
             }
         }
+        [HttpGet]
+        [Route("FeedBack")]
+        public IActionResult GetFeedBack(int bookId)
+        {
+            try
+            {
+                var result = this.manager.GetFeedBack(bookId);
+                if (result != null)
+                {
+                    return this.Ok(new ResponseModel<List<FeedBackModel>>() { Status = true, Message = "FeedBack Retrived Successfull!!", Data = result });
+                }
+                else
+                {
+                    return this.BadRequest(new ResponseModel<string>() { Status = false, Message = "Not Retrived Successfully!" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return this.NotFound(new ResponseModel<string>() { Status = false, Message = ex.Message });
+            }
+        }
+
     }
 }
