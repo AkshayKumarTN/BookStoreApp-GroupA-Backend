@@ -74,3 +74,15 @@ CREATE TABLE MyWishList
    FOREIGN KEY (UserId) references [BookStore].[dbo].[User] (UserId),
   FOREIGN KEY (BookId) references  [BookStore].[dbo].[Books] (BookId)
 );
+
+------------------------------FeedBack----------------------------
+create table AddFeedBack(
+  FeedBackId INT PRIMARY KEY IDENTITY(1,1),
+  BookId int not null, 
+  UserName varchar(255) not null,
+  Rating int not  null,
+  Comments varchar(max),
+    FOREIGN KEY (BookId) references  [Books](BookId)
+  )
+
+

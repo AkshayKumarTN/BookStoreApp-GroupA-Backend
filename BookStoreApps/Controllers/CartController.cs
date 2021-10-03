@@ -94,11 +94,11 @@ namespace BookStoreApps.Controllers
                 var result = this.manager.RemoveBookFromCart(cartId);
                 if (result == true)
                 {
-                    return this.Ok(new ResponseModel<string>() { Status = true, Message = "Book Deleted Successfully!!" });
+                    return this.Ok(new ResponseModel<string>() { Status = true, Message = "Book Deleted from cart Successfully!!" });
                 }
                 else
                 {
-                    return this.BadRequest(new ResponseModel<string>() { Status = false, Message = "Not Deleted Successfully!" });
+                    return this.BadRequest(new ResponseModel<string>() { Status = false, Message = "Not Deleted from cart Successfully!" });
                 }
             }
             catch (Exception ex)
