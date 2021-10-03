@@ -1,26 +1,43 @@
-﻿using Manager.Interface;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MyWishListController.cs" company="Bridgelabz">
+//   Copyright © 2021 Company="BridgeLabz"
+// </copyright>
+// ----------------------------------------------------------------------------------------------------------
 namespace BookStoreApps.Controllers
 {
- 
+    using System;
+    using System.Collections.Generic;
+    using Manager.Interface;
+    using Microsoft.AspNetCore.Mvc;
+    using Models;
 
+    /// <summary>
+    /// Controller for My Wish list
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [ApiController]
     [Route("api/[controller]")]
     public class MyWishListController : ControllerBase
     {
+        /// <summary>
+        /// The manager
+        /// </summary>
         private readonly IMyWishListManager manager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MyWishListController"/> class.
+        /// </summary>
+        /// <param name="manager">The manager.</param>
         public MyWishListController(IMyWishListManager manager)
         {
             this.manager = manager;
         }
+
+        /// <summary>
+        /// Adds the book to my wish list.
+        /// </summary>
+        /// <param name="myWishList">My wish list.</param>
+        /// <returns>Returns Success Message and status</returns>
         [HttpPost]
         [Route("WishList")]
         public IActionResult AddBookToMyWishList([FromBody] MyWishListModel myWishList)
@@ -43,6 +60,11 @@ namespace BookStoreApps.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets the book from my wish list.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>Return Wish List , message and status</returns>
         [HttpGet]
         [Route("WishList")]
         public IActionResult GetBookFromMyWishList(int userId)
@@ -64,6 +86,12 @@ namespace BookStoreApps.Controllers
                 return this.NotFound(new ResponseModel<string>() { Status = false, Message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Removes the book from my wish list.
+        /// </summary>
+        /// <param name="myWishListId">My wish list identifier.</param>
+        /// <returns>Returns Status and message</returns>
         [HttpDelete]
         [Route("WishList")]
         public IActionResult RemoveBookFromMyWishList(int myWishListId)
@@ -85,6 +113,5 @@ namespace BookStoreApps.Controllers
                 return this.NotFound(new ResponseModel<string>() { Status = false, Message = ex.Message });
             }
         }
-
     }
 }

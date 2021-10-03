@@ -1,25 +1,45 @@
-﻿using Manager.Interface;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AddressController.cs" company="Bridgelabz">
+//   Copyright © 2021 Company="BridgeLabz"
+// </copyright>
+// ----------------------------------------------------------------------------------------------------------
 namespace BookStoreApps.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using Manager.Interface;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Models;
+
+    /// <summary>
+    /// Controller for Address 
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AddressController : ControllerBase
     {
+        /// <summary>
+        /// The manager
+        /// </summary>
         private readonly IAddressManager manager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddressController"/> class.
+        /// </summary>
+        /// <param name="manager">The manager.</param>
         public AddressController(IAddressManager manager)
         {
             this.manager = manager;
         }
+
+        /// <summary>
+        /// Adds the address.
+        /// </summary>
+        /// <param name="userAddress">The user address.</param>
+        /// <returns>Return message and Data</returns>
         [HttpPost]
         [Route("Address")]
         public IActionResult AddAddress([FromBody] UserAddress userAddress)
@@ -42,6 +62,11 @@ namespace BookStoreApps.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets all user address.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>Return message and Data and Address List</returns>
         [HttpPost]
         [Route("GetAddress")]
         public IActionResult GetAllUserAddress(int userId)
@@ -64,6 +89,11 @@ namespace BookStoreApps.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates the address.
+        /// </summary>
+        /// <param name="updateData">The update data.</param>
+        /// <returns>Return message and Data</returns>
         [HttpPut]
         [Route("Address")]
         public IActionResult UpdateAddress([FromBody] UserAddress updateData)

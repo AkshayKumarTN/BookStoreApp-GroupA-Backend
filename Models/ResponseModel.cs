@@ -1,9 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ResponseModel.cs" company="Bridgelabz">
+//   Copyright © 2021 Company="BridgeLabz"
+// </copyright>
+// ----------------------------------------------------------------------------------------------------------
 namespace Models
 {
+    using Microsoft.AspNetCore.Http;
+
+    /// <summary>
+    /// Class for Response Model
+    /// </summary>
+    /// <typeparam name="T">Generic can be any data type</typeparam>
     public class ResponseModel<T>
     {
         /// <summary>

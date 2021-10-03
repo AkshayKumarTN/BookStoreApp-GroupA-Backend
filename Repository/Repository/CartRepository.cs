@@ -1,34 +1,65 @@
-﻿using Microsoft.Extensions.Configuration;
-using Models;
-using Repository.Interface;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Text;
-
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CartRepository.cs" company="Bridgelabz">
+//   Copyright © 2021 Company="BridgeLabz"
+// </copyright>
+// ----------------------------------------------------------------------------------------------------------
 namespace Repository.Repository
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.SqlClient;
+    using Microsoft.Extensions.Configuration;
+    using Models;
+    using global::Repository.Interface;
+
+    /// <summary>
+    /// Cart Repository implement interface
+    /// </summary>
+    /// <seealso cref="Repository.Interface.ICartRepository" />
     public class CartRepository : ICartRepository
     {
+        /// <summary>
+        /// The connection
+        /// </summary>
+        private SqlConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CartRepository"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
         public CartRepository(IConfiguration configuration)
         {
             this.Configuration = configuration;
         }
+
+        /// <summary>
+        /// Gets the configuration.
+        /// </summary>
+        /// <value>
+        /// The configuration.
+        /// </value>
         public IConfiguration Configuration { get; }
 
-        SqlConnection connection;
+        /// <summary>
+        /// Adds the book to cart.
+        /// </summary>
+        /// <param name="cartData">The cart data.</param>
+        /// <returns>
+        /// Returns true or false
+        /// </returns>
+        /// <exception cref="System.Exception">Returns exception message</exception>
         public bool AddBookToCart(CartModel cartData)
         {
             try
             {
                 if (cartData != null)
                 {
-                    connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
-                    using (connection)
+                    this.connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
+                    using (this.connection)
                     {
-                        connection.Open();
-                        SqlCommand cmd = new SqlCommand("[dbo].[AddBookToCart]", connection);
+                        this.connection.Open();
+                        SqlCommand cmd = new SqlCommand("[dbo].[AddBookToCart]", this.connection);
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@UserId", cartData.UserId);
                         cmd.Parameters.AddWithValue("@BookId", cartData.BookId);
@@ -37,9 +68,11 @@ namespace Repository.Repository
                         {
                             return true;
                         }
+
                         return false;
                     }
                 }
+
                 return false;
             }
             catch (ArgumentNullException ex)
@@ -48,18 +81,30 @@ namespace Repository.Repository
             }
             finally
             {
-                connection.Close();
+                this.connection.Close();
             }
         }
+
+        /// <summary>
+        /// Gets the cart.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>
+        /// Returns List of get cart model
+        /// </returns>
+        /// <exception cref="System.Exception">
+        /// No Books in Cart list
+        /// or
+        /// </exception>
         public List<GetCartModel> GetCart(int userId)
         {
             try
             {
-                connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
-                using (connection)
+                this.connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
+                using (this.connection)
                 {
-                    connection.Open();
-                    SqlCommand cmd = new SqlCommand("[dbo].[GetCart]", connection)
+                    this.connection.Open();
+                    SqlCommand cmd = new SqlCommand("[dbo].[GetCart]", this.connection)
                     {
                         CommandType = CommandType.StoredProcedure
                     };
@@ -84,10 +129,12 @@ namespace Repository.Repository
                         getCartModel.UserId = Convert.ToInt32(sqlDataReader["UserId"]);
                         list.Add(getCartModel);
                     }
+
                     if (sqlDataReader.HasRows == false)
                     {
                         throw new Exception("No Books in Cart list");
                     }
+
                     return list;
                 }
             }
@@ -97,20 +144,29 @@ namespace Repository.Repository
             }
             finally
             {
-                connection.Close();
+                this.connection.Close();
             }
         }
+
+        /// <summary>
+        /// Updates the count in cart.
+        /// </summary>
+        /// <param name="cartData">The cart data.</param>
+        /// <returns>
+        /// Returns true or false
+        /// </returns>
+        /// <exception cref="System.Exception">Returns exception message</exception>
         public bool UpdateCountInCart(CartModel cartData)
         {
             try
             {
                 if (cartData != null)
                 {
-                    connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
-                    using (connection)
+                    this.connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
+                    using (this.connection)
                     {
-                        connection.Open();
-                        SqlCommand cmd = new SqlCommand("[dbo].[DecreaseCount]", connection);
+                        this.connection.Open();
+                        SqlCommand cmd = new SqlCommand("[dbo].[DecreaseCount]", this.connection);
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@CartId", cartData.CartId);
                         cmd.Parameters.AddWithValue("@BookId", cartData.BookId);
@@ -119,9 +175,11 @@ namespace Repository.Repository
                         {
                             return true;
                         }
+
                         return false;
                     }
                 }
+
                 return false;
             }
             catch (ArgumentNullException ex)
@@ -130,20 +188,29 @@ namespace Repository.Repository
             }
             finally
             {
-                connection.Close();
+                this.connection.Close();
             }
         }
+
+        /// <summary>
+        /// Removes the book from cart.
+        /// </summary>
+        /// <param name="cartId">The cart identifier.</param>
+        /// <returns>
+        /// Returns true or false
+        /// </returns>
+        /// <exception cref="System.Exception">Returns exception message</exception>
         public bool RemoveBookFromCart(int cartId)
         {
             try
             {
                 if (cartId != 0)
                 {
-                    connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
-                    using (connection)
+                    this.connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
+                    using (this.connection)
                     {
-                        connection.Open();
-                        SqlCommand cmd = new SqlCommand("[dbo].[RemoveBookFromCart]", connection);
+                        this.connection.Open();
+                        SqlCommand cmd = new SqlCommand("[dbo].[RemoveBookFromCart]", this.connection);
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@CartId", cartId);
                         int result = cmd.ExecuteNonQuery();
@@ -151,9 +218,11 @@ namespace Repository.Repository
                         {
                             return true;
                         }
+
                         return false;
                     }
                 }
+
                 return false;
             }
             catch (ArgumentNullException ex)
@@ -162,9 +231,8 @@ namespace Repository.Repository
             }
             finally
             {
-                connection.Close();
+                this.connection.Close();
             }
         }
     }
-
 }

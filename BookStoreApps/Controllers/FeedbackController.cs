@@ -1,25 +1,45 @@
-﻿using Manager.Interface;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="FeedbackController.cs" company="Bridgelabz">
+//   Copyright © 2021 Company="BridgeLabz"
+// </copyright>
+// ----------------------------------------------------------------------------------------------------------
 namespace BookStoreApps.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using Manager.Interface;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Models;
+
+    /// <summary>
+    /// Controller for Feedback
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class FeedbackController : ControllerBase
     {
+        /// <summary>
+        /// The manager
+        /// </summary>
         private readonly IFeedbackManager manager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FeedbackController"/> class.
+        /// </summary>
+        /// <param name="manager">The manager.</param>
         public FeedbackController(IFeedbackManager manager)
         {
             this.manager = manager;
         }
+
+        /// <summary>
+        /// Adds the feed back.
+        /// </summary>
+        /// <param name="feedBackData">The feed back data.</param>
+        /// <returns>Return Message and Status</returns>
         [HttpPost]
         [Route("FeedBack")]
         public IActionResult AddFeedBack([FromBody] FeedBackModel feedBackData)
@@ -41,6 +61,12 @@ namespace BookStoreApps.Controllers
                 return this.NotFound(new ResponseModel<string>() { Status = false, Message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Gets the feed back.
+        /// </summary>
+        /// <param name="bookId">The book identifier.</param>
+        /// <returns>Return Message and Status</returns>
         [HttpGet]
         [Route("FeedBack")]
         public IActionResult GetFeedBack(int bookId)
@@ -62,6 +88,5 @@ namespace BookStoreApps.Controllers
                 return this.NotFound(new ResponseModel<string>() { Status = false, Message = ex.Message });
             }
         }
-
     }
 }

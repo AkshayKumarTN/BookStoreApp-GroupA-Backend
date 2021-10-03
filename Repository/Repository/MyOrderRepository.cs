@@ -1,34 +1,58 @@
-﻿using Microsoft.Extensions.Configuration;
-using Models;
-using Repository.Interface;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Text;
-
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MyOrderRepository.cs" company="Bridgelabz">
+//   Copyright © 2021 Company="BridgeLabz"
+// </copyright>
+// ----------------------------------------------------------------------------------------------------------
 namespace Repository.Repository
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.SqlClient;
+    using Microsoft.Extensions.Configuration;
+    using Models;
+    using global::Repository.Interface;
+
+    /// <summary>
+    /// Order Repository implements Interface
+    /// </summary>
+    /// <seealso cref="Repository.Interface.IMyOrderRepository" />
     public class MyOrderRepository : IMyOrderRepository
     {
+        /// <summary>
+        /// The connection
+        /// </summary>
+        private SqlConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MyOrderRepository"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
         public MyOrderRepository(IConfiguration configuration)
         {
             this.Configuration = configuration;
         }
+
+        /// <summary>
+        /// Gets the configuration.
+        /// </summary>
+        /// <value>
+        /// The configuration.
+        /// </value>
         public IConfiguration Configuration { get; }
 
-        SqlConnection connection;
 
         public List<int> AddOrder(List<MyOrdersModel> orderdata)
+
         {
             try
             {
                 List<int> result = new List<int>();
                 if (orderdata != null)
                 {
-                    connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
-                    using (connection)
-                    {
+                    this.connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
+                    using (this.connection)
+
                         foreach (var orderData in orderdata)
                         {
                             connection.Open();
@@ -56,8 +80,11 @@ namespace Repository.Repository
                             //}
                         }
                         return result;
+
+                        
                     }
-                }
+                
+
                 return null;
             }
             catch (ArgumentNullException ex)
@@ -66,18 +93,30 @@ namespace Repository.Repository
             }
             finally
             {
-                connection.Close();
+                this.connection.Close();
             }
         }
+
+        /// <summary>
+        /// Gets my orders.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>
+        /// returns list of get my order
+        /// </returns>
+        /// <exception cref="System.Exception">
+        /// No Orders in MyOrder
+        /// or
+        /// </exception>
         public List<GetMyOrdersModel> GetMyOrders(int userId)
         {
             try
             {
-                connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
-                using (connection)
+                this.connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
+                using (this.connection)
                 {
-                    connection.Open();
-                    SqlCommand cmd = new SqlCommand("GetMyOrders", connection)
+                    this.connection.Open();
+                    SqlCommand cmd = new SqlCommand("GetMyOrders", this.connection)
                     {
                         CommandType = CommandType.StoredProcedure
                     };
@@ -99,10 +138,12 @@ namespace Repository.Repository
                         getMyOrders.TotalCost = Convert.ToInt32(sqlDataReader["TotalCost"]);
                         orderList.Add(getMyOrders);
                     }
+
                     if (sqlDataReader.HasRows == false)
                     {
                         throw new Exception("No Orders in MyOrder");
                     }
+
                     return orderList;
                 }
             }
@@ -112,7 +153,7 @@ namespace Repository.Repository
             }
             finally
             {
-                connection.Close();
+                this.connection.Close();
             }
         }
     }

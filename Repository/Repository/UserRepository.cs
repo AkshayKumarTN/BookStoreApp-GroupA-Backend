@@ -1,28 +1,60 @@
-﻿using Microsoft.Extensions.Configuration;
-using Models;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Net;
-using System.Net.Mail;
-using System.Text;
-using Experimental.System.Messaging;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="UserRepository.cs" company="Bridgelabz">
+//   Copyright © 2021 Company="BridgeLabz"
+// </copyright>
+// ----------------------------------------------------------------------------------------------------------
 namespace Repository.Repository
 {
+    using System;
+    using System.Data;
+    using System.Data.SqlClient;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Net;
+    using System.Net.Mail;
+    using System.Security.Claims;
+    using System.Text;
+    using Experimental.System.Messaging;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.IdentityModel.Tokens;
+    using Models;
+    using global::Repository.Interface;
+
+    /// <summary>
+    /// User repository implements interface
+    /// </summary>
+    /// <seealso cref="Repository.Interface.IUserRepository" />
     public class UserRepository : IUserRepository
     {
+        /// <summary>
+        /// The connection
+        /// </summary>
+        private SqlConnection connection;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserRepository"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
         public UserRepository(IConfiguration configuration)
         {
             this.Configuration = configuration;
         }
+
+        /// <summary>
+        /// Gets the configuration.
+        /// </summary>
+        /// <value>
+        /// The configuration.
+        /// </value>
         public IConfiguration Configuration { get; }
 
-        SqlConnection connection;
+        /// <summary>
+        /// Registers the specified user data.
+        /// </summary>
+        /// <param name="userData">The user data.</param>
+        /// <returns>
+        /// Return model
+        /// </returns>
+        /// <exception cref="System.Exception">Returns exception message</exception>
         public RegisterModel Register(RegisterModel userData)
         {
             try
@@ -31,28 +63,28 @@ namespace Repository.Repository
                 {
                     RegisterModel registerModel = new RegisterModel();
                     connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
-                     using (connection)
+                    using (connection)
+                    {
+                        connection.Open();
+                        SqlCommand cmd = new SqlCommand("Registration", connection);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@FullName", userData.FullName);
+                        cmd.Parameters.AddWithValue("@EmailId", userData.EmailId);
+                        cmd.Parameters.AddWithValue("@Password", EncryptPassWord(userData.Password));
+                        cmd.Parameters.AddWithValue("@MobileNumber", userData.MobileNumber);
+                        var returnedSQLParameter = cmd.Parameters.Add("@result", SqlDbType.Int);
+                        returnedSQLParameter.Direction = ParameterDirection.Output;
+                        cmd.ExecuteNonQuery();
+                        var result = (int)returnedSQLParameter.Value;
+                        if (result == 1)
                         {
-                            connection.Open();
-                            SqlCommand cmd = new SqlCommand("Registration", connection);
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@UserName", userData.FullName);
-                            cmd.Parameters.AddWithValue("@EmailId", userData.EmailId);
-                            cmd.Parameters.AddWithValue("@Password", EncryptPassWord(userData.Password));
-                            cmd.Parameters.AddWithValue("@MobileNumber", userData.MobileNumber);
-                            var returnedSQLParameter = cmd.Parameters.Add("@result", SqlDbType.Int);
-                            returnedSQLParameter.Direction = ParameterDirection.Output;
-                           cmd.ExecuteNonQuery();
-                           var result = (int)returnedSQLParameter.Value;
-                           if (result == 1)
-                            {
-                                //userData.Password = null;
-                                return userData;
-                            }
-                            return null;
+                            //userData.Password = null;
+                            return userData;
                         }
+                        return null;
                     }
-                
+                }
+
                 return null;
             }
             catch (ArgumentNullException ex)
@@ -64,28 +96,46 @@ namespace Repository.Repository
                 connection.Close();
             }
         }
+
+        /// <summary>
+        /// Encrypts the pass word.
+        /// </summary>
+        /// <param name="password">The password.</param>
+        /// <returns>Return string</returns>
         public string EncryptPassWord(string password)
         {
             var passwordInBytes = Encoding.UTF8.GetBytes(password);
             string encodePassword = Convert.ToBase64String(passwordInBytes);
             return encodePassword;
         }
+
+        /// <summary>
+        /// Logins the specified login data.
+        /// </summary>
+        /// <param name="loginData">The login data.</param>
+        /// <returns>Returns model</returns>
+        /// <exception cref="System.Exception">
+        /// EmailId does not exist
+        /// or
+        /// Password does not match
+        /// or
+        /// </exception>
         public RegisterModel Login(LoginModel loginData)
         {
             try
             {
                 if (loginData != null)
                 {
-                    connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
-                    using (connection)
+                    this.connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
+                    using (this.connection)
                     {
-                        connection.Open();
-                        SqlCommand cmd = new SqlCommand("Login", connection)
+                        this.connection.Open();
+                        SqlCommand cmd = new SqlCommand("Login", this.connection)
                         {
                             CommandType = CommandType.StoredProcedure
                         };
                         cmd.Parameters.AddWithValue("@EmailId", loginData.EmailId);
-                        cmd.Parameters.AddWithValue("@Password", EncryptPassWord(loginData.Password));
+                        cmd.Parameters.AddWithValue("@Password", this.EncryptPassWord(loginData.Password));
                         SqlDataReader sqlDataReader = cmd.ExecuteReader();
 
                         RegisterModel registerModel = new RegisterModel();
@@ -97,17 +147,20 @@ namespace Repository.Repository
                             registerModel.MobileNumber = sqlDataReader["MobileNumber"].ToString();
                             registerModel.Password = sqlDataReader["Password"].ToString();
                         }
+
                         if (sqlDataReader.HasRows == false)
                         {
                             throw new Exception("EmailId does not exist");
                         }
-                        else if (registerModel.Password != EncryptPassWord(loginData.Password))
+                        else if (registerModel.Password != this.EncryptPassWord(loginData.Password))
                         {
                             throw new Exception("Password does not match");
                         }
+
                         return registerModel;
                     }
                 }
+
                 return null;
             }
             catch (ArgumentNullException ex)
@@ -116,21 +169,27 @@ namespace Repository.Repository
             }
             finally
             {
-                connection.Close();
+                this.connection.Close();
             }
         }
 
+        /// <summary>
+        /// Forget the password.
+        /// </summary>
+        /// <param name="email">The email.</param>
+        /// <returns>Returns model</returns>
+        /// <exception cref="System.Exception">Return exception message</exception>
         public OTPModel ForgotPassword(string email)
         {
             try
             {
                 if (email != null)
                 {
-                    connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
-                    using (connection)
+                    this.connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
+                    using (this.connection)
                     {
-                        connection.Open();
-                        SqlCommand cmd = new SqlCommand("[dbo].[ForgotPassword]", connection)
+                        this.connection.Open();
+                        SqlCommand cmd = new SqlCommand("[dbo].[ForgotPassword]", this.connection)
                         {
                             CommandType = CommandType.StoredProcedure
                         };
@@ -142,7 +201,8 @@ namespace Repository.Repository
                             otpModel.UserId = Convert.ToInt32(sqlDataReader["UserId"]);
                             otpModel.EmailId = sqlDataReader["EmailId"].ToString();
                         }
-                        var generatedOTP = GenerateRandomOTP();
+
+                        var generatedOTP = this.GenerateRandomOTP();
                         this.SendMSMQ(generatedOTP);
                         if (this.SendMail(email))
                         {
@@ -155,35 +215,45 @@ namespace Repository.Repository
                         }
                     }
                 }
+
                 return null;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
             finally
             {
-                connection.Close();
+                this.connection.Close();
             }
         }
-        private string GenerateRandomOTP()
+
+        /// <summary>
+        /// Generates the random string.
+        /// </summary>
+        /// <returns>Returns string</returns>
+        public string GenerateRandomOTP()
         {
-            string[] saAllowedCharacters = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
-            string OTP = String.Empty;
-            string sTempChars = String.Empty;
+            string[] sallowedCharacters = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
+            string otp = string.Empty;
+            string stempChars = string.Empty;
             Random rand = new Random();
             int length = 4;
             for (int i = 0; i < length; i++)
             {
-                int p = rand.Next(0, saAllowedCharacters.Length);
-                sTempChars = saAllowedCharacters[rand.Next(0, saAllowedCharacters.Length)];
-                OTP += sTempChars;
+                int p = rand.Next(0, sallowedCharacters.Length);
+                stempChars = sallowedCharacters[rand.Next(0, sallowedCharacters.Length)];
+                otp += stempChars;
             }
-            return OTP;
+
+            return otp;
         }
 
-
-        private void SendMSMQ(string otp)
+        /// <summary>
+        /// Sends the MSMQ.
+        /// </summary>
+        /// <param name="otp">The string.</param>
+        public void SendMSMQ(string otp)
         {
             MessageQueue msgqueue;
 
@@ -195,15 +265,21 @@ namespace Repository.Repository
             {
                 msgqueue = MessageQueue.Create(@".\Private$\MyQueue");
             }
+
             Message message = new Message();
             var formatter = new BinaryMessageFormatter();
             message.Formatter = formatter;
             msgqueue.Label = "url Link";
-            message.Body = "OTP for Reset Password "+otp;
+            message.Body = "OTP for Reset Password " + otp;
             msgqueue.Send(message);
         }
 
-        private bool SendMail(string email)
+        /// <summary>
+        /// Sends the mail.
+        /// </summary>
+        /// <param name="email">The email.</param>
+        /// <returns>Returns true or false</returns>
+        public bool SendMail(string email)
         {
             string emailMessage = this.ReceiveMSMQ();
             if (this.SendMailToUser(email, emailMessage))
@@ -216,7 +292,11 @@ namespace Repository.Repository
             }
         }
 
-        private string ReceiveMSMQ()
+        /// <summary>
+        /// Receives the MSMQ.
+        /// </summary>
+        /// <returns>Return string</returns>
+        public string ReceiveMSMQ()
         {
             // for reading msmq
             var receivequeue = new MessageQueue(@".\Private$\MyQueue");
@@ -226,7 +306,13 @@ namespace Repository.Repository
             return emailMessage;
         }
 
-        private bool SendMailToUser(string email, string message)
+        /// <summary>
+        /// Sends the mail to user.
+        /// </summary>
+        /// <param name="email">The email.</param>
+        /// <param name="message">The message.</param>
+        /// <returns>Returns true or false</returns>
+        public bool SendMailToUser(string email, string message)
         {
             MailMessage mailMessage = new MailMessage();
             SmtpClient smtp = new SmtpClient("smtp.gmail.com");
@@ -241,18 +327,25 @@ namespace Repository.Repository
             smtp.Send(mailMessage);
             return true;
         }
+
+        /// <summary>
+        /// Resets the password.
+        /// </summary>
+        /// <param name="resetData">The reset data.</param>
+        /// <returns>Return true or false</returns>
+        /// <exception cref="System.Exception">Return exception message</exception>
         public bool ResetPassword(ResetPasswordModel resetData)
         {
             try
             {
                 if (resetData != null)
                 {
-                    string newPassword = EncryptPassWord(resetData.Password);
-                    connection = new SqlConnection(this.Configuration.GetConnectionString("DbConnection"));
-                    using (connection)
-                    { 
-                        connection.Open();
-                            SqlCommand cmd = new SqlCommand("RestPassword", connection);
+                    string newPassword = this.EncryptPassWord(resetData.Password);
+                    this.connection = new SqlConnection(this.Configuration.GetConnectionString("DbConnection"));
+                    using (this.connection)
+                    {
+                        this.connection.Open();
+                            SqlCommand cmd = new SqlCommand("RestPassword", this.connection);
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.AddWithValue("@UserId", resetData.UserId);
                             cmd.Parameters.AddWithValue("@Password", newPassword);
@@ -261,6 +354,7 @@ namespace Repository.Repository
                             {
                                 return true;
                             }
+
                             return false;
                         }
                     }
@@ -273,22 +367,31 @@ namespace Repository.Repository
             }
         }
 
+        /// <summary>
+        /// Edits the personal details.
+        /// </summary>
+        /// <param name="userData">The user data.</param>
+        /// <returns>returns true or false</returns>
+        /// <exception cref="System.Exception">
+        /// UserId does not exist
+        /// or
+        /// </exception>
         public bool EditPersonalDetails(RegisterModel userData)
         {
             try
             {
                 if (userData != null)
                 {
-                    connection = new SqlConnection(this.Configuration.GetConnectionString("DbConnection"));
-                    using (connection)
-                    { 
-                        connection.Open();
-                            SqlCommand cmd = new SqlCommand("[dbo].[EditPersonalDetails]", connection);
+                    this.connection = new SqlConnection(this.Configuration.GetConnectionString("DbConnection"));
+                    using (this.connection)
+                    {
+                        this.connection.Open();
+                            SqlCommand cmd = new SqlCommand("[dbo].[EditPersonalDetails]", this.connection);
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.AddWithValue("@UserId", userData.UserId);
                             cmd.Parameters.AddWithValue("@FullName", userData.FullName);
                             cmd.Parameters.AddWithValue("@EmailId", userData.EmailId);
-                            cmd.Parameters.AddWithValue("@Password", EncryptPassWord(userData.Password));
+                            cmd.Parameters.AddWithValue("@Password", this.EncryptPassWord(userData.Password));
                             cmd.Parameters.AddWithValue("@MobileNumber", userData.MobileNumber);
                             SqlDataReader sqlDataReader = cmd.ExecuteReader();
                             RegisterModel registerModel = new RegisterModel();
@@ -296,6 +399,7 @@ namespace Repository.Repository
                             {
                                 throw new Exception("UserId does not exist");
                             }
+
                             return true;
                         }
                     }
@@ -308,10 +412,15 @@ namespace Repository.Repository
             }
             finally
             {
-                connection.Close();
+                this.connection.Close();
             }
         }
 
+        /// <summary>
+        /// Generates the token.
+        /// </summary>
+        /// <param name="email">The email.</param>
+        /// <returns>Returns string</returns>
         public string GenerateToken(string email)
         {
             byte[] key = Encoding.UTF8.GetBytes(this.Configuration["SecretKey"]);
@@ -329,6 +438,5 @@ namespace Repository.Repository
             JwtSecurityToken token = handler.CreateJwtSecurityToken(descriptor);
             return handler.WriteToken(token);
         }
-
     }
 }

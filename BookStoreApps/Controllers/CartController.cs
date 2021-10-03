@@ -1,25 +1,45 @@
-﻿using Manager.Interface;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CartController.cs" company="Bridgelabz">
+//   Copyright © 2021 Company="BridgeLabz"
+// </copyright>
+// ----------------------------------------------------------------------------------------------------------
 namespace BookStoreApps.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using Manager.Interface;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Models;
+
+    /// <summary>
+    /// Controller for Cart
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CartController : ControllerBase
     {
+        /// <summary>
+        /// The manager
+        /// </summary>
         private readonly ICartManager manager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CartController"/> class.
+        /// </summary>
+        /// <param name="manager">The manager.</param>
         public CartController(ICartManager manager)
         {
             this.manager = manager;
         }
+
+        /// <summary>
+        /// Adds the book to cart.
+        /// </summary>
+        /// <param name="cartData">The cart data.</param>
+        /// <returns>Return message and status</returns>
         [HttpPost]
         [Route("Cart")]
         public IActionResult AddBookToCart([FromBody] CartModel cartData)
@@ -42,6 +62,11 @@ namespace BookStoreApps.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets the cart.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>Return message and status</returns>
         [HttpGet]
         [Route("Cart")]
         public IActionResult GetCart(int userId)
@@ -64,6 +89,11 @@ namespace BookStoreApps.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates the count in cart.
+        /// </summary>
+        /// <param name="cartData">The cart data.</param>
+        /// <returns>Return message and status</returns>
         [HttpPut]
         [Route("Cart")]
         public IActionResult UpdateCountInCart(CartModel cartData)
@@ -85,6 +115,12 @@ namespace BookStoreApps.Controllers
                 return this.NotFound(new ResponseModel<string>() { Status = false, Message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Removes from cart.
+        /// </summary>
+        /// <param name="cartId">The cart identifier.</param>
+        /// <returns>Return message and status</returns>
         [HttpDelete]
         [Route("Cart")]
         public IActionResult RemoveFromCart(int cartId)
@@ -107,5 +143,4 @@ namespace BookStoreApps.Controllers
             }
         }
     }
-
 }

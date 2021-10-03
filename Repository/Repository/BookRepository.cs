@@ -1,29 +1,57 @@
-﻿using CloudinaryDotNet;
-using CloudinaryDotNet.Actions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.Services.Account;
-using Models;
-using Repository.Interface;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Text;
-
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="BookRepository.cs" company="Bridgelabz">
+//   Copyright © 2021 Company="BridgeLabz"
+// </copyright>
+// ----------------------------------------------------------------------------------------------------------
 namespace Repository.Repository
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.SqlClient;
+    using CloudinaryDotNet;
+    using CloudinaryDotNet.Actions;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Configuration;
+    using Models;
+    using global::Repository.Interface;
+
+    /// <summary>
+    /// Book Repository
+    /// </summary>
+    /// <seealso cref="Repository.Interface.IBookRepository" />
     public class BookRepository : IBookRepository
     {
+        /// <summary>
+        /// The connection
+        /// </summary>
+        private SqlConnection connection;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BookRepository"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
         public BookRepository(IConfiguration configuration)
         {
             this.Configuration = configuration;
         }
+
+        /// <summary>
+        /// Gets the configuration.
+        /// </summary>
+        /// <value>
+        /// The configuration.
+        /// </value>
         public IConfiguration Configuration { get; }
 
-        SqlConnection connection;
-
+        /// <summary>
+        /// Adds the book.
+        /// </summary>
+        /// <param name="bookData">The book data.</param>
+        /// <returns>
+        /// Returns true or false
+        /// </returns>
+        /// <exception cref="System.Exception">'Returns exception</exception>
         public bool AddBook(AddBookModel bookData)
         {
             try
@@ -31,13 +59,13 @@ namespace Repository.Repository
                 if (bookData != null)
                 {
                     BookModel bookModel = new BookModel();
-                    var bookImage = AddImage(bookData.BookImage);
-                    var bigImage = AddImage(bookData.BigImage);
-                    connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
-                    using (connection)
+                    var bookImage = this.AddImage(bookData.BookImage);
+                    var bigImage = this.AddImage(bookData.BigImage);
+                    this.connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
+                    using (this.connection)
                     {
-                        connection.Open();
-                            SqlCommand cmd = new SqlCommand("[dbo].[InsertBookData]", connection);
+                        this.connection.Open();
+                            SqlCommand cmd = new SqlCommand("[dbo].[InsertBookData]", this.connection);
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.AddWithValue("@Title", bookData.Title);
                             cmd.Parameters.AddWithValue("@AuthorName", bookData.AuthorName);
@@ -52,6 +80,7 @@ namespace Repository.Repository
                             {
                                 return true;
                             }
+
                             return false;
                         }
                     }
@@ -64,10 +93,21 @@ namespace Repository.Repository
             }
             finally
             {
-                connection.Close();
+                this.connection.Close();
             }
         }
 
+        /// <summary>
+        /// Updates the book.
+        /// </summary>
+        /// <param name="bookData">The book data.</param>
+        /// <returns>
+        /// Returns true or false
+        /// </returns>
+        /// <exception cref="System.Exception">
+        /// BookId does not exist
+        /// or
+        /// </exception>
         public bool UpdateBook(AddBookModel bookData)
         {
             try
@@ -75,13 +115,13 @@ namespace Repository.Repository
                 if (bookData != null)
                 {
                     BookModel bookModel = new BookModel();
-                    var bookImage = AddImage(bookData.BookImage);
-                    var bigImage = AddImage(bookData.BigImage);
-                    connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
-                    using (connection)
+                    var bookImage = this.AddImage(bookData.BookImage);
+                    var bigImage = this.AddImage(bookData.BigImage);
+                    this.connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
+                    using (this.connection)
                     {
-                        connection.Open();
-                            SqlCommand cmd = new SqlCommand("[dbo].[UpdateBookData]", connection);
+                        this.connection.Open();
+                            SqlCommand cmd = new SqlCommand("[dbo].[UpdateBookData]", this.connection);
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.AddWithValue("@BookId", bookData.BookId);
                             cmd.Parameters.AddWithValue("@Title", bookData.Title);
@@ -106,13 +146,14 @@ namespace Repository.Repository
                                     book.BookImage = sqlDataReader["BookImage"].ToString();
                                 book.BigImage = sqlDataReader["BigImage"].ToString();
                                     book.BookQuantity = Convert.ToInt32(sqlDataReader["BookQuantity"]);
-                                };
-
+                                }
                             }
+
                             if (sqlDataReader.HasRows == false)
                             {
                                 throw new Exception("BookId does not exist");
                             }
+
                             return true;
                         }
                     }
@@ -125,18 +166,29 @@ namespace Repository.Repository
             }
             finally
             {
-                connection.Close();
+                this.connection.Close();
             }
         }
+
+        /// <summary>
+        /// Gets the books.
+        /// </summary>
+        /// <returns>
+        /// Returns list of book model
+        /// </returns>
+        /// <exception cref="System.Exception">
+        /// The book database is empty
+        /// or
+        /// </exception>
         public List<BookModel> GetBooks()
         {
             try
             {
-                connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
-                using (connection)
+                this.connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
+                using (this.connection)
                 {
-                    connection.Open();
-                    SqlCommand cmd = new SqlCommand("GetAllBooks", connection)
+                    this.connection.Open();
+                    SqlCommand cmd = new SqlCommand("GetAllBooks", this.connection)
                     {
                         CommandType = CommandType.StoredProcedure
                     };
@@ -157,10 +209,12 @@ namespace Repository.Repository
                         bookModel.BookQuantity = Convert.ToInt32(sqlDataReader["BookQuantity"]);
                         bookList.Add(bookModel);
                     }
+
                     if (sqlDataReader.HasRows == false)
                     {
                         throw new Exception("The book database is empty");
                     }
+
                     return bookList;
                 }
             }
@@ -170,15 +224,21 @@ namespace Repository.Repository
             }
             finally
             {
-                connection.Close();
+                this.connection.Close();
             }
         }
 
+        /// <summary>
+        /// Adds the image.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        /// <returns>Returns string</returns>
+        /// <exception cref="System.Exception">Returns exception message</exception>
         private string AddImage(IFormFile image)
         {
             try
             {
-                CloudinaryDotNet.Account account = new CloudinaryDotNet.Account(Configuration["CloudinaryAccount:CloudName"], Configuration["CloudinaryAccount:ApiKey"], Configuration["CloudinaryAccount:ApiSecret"]);
+                CloudinaryDotNet.Account account = new CloudinaryDotNet.Account(this.Configuration["CloudinaryAccount:CloudName"], this.Configuration["CloudinaryAccount:ApiKey"], this.Configuration["CloudinaryAccount:ApiSecret"]);
                     Cloudinary cloudinary = new Cloudinary(account);
                     ImageUploadParams uploadParams = new ImageUploadParams()
                     {
@@ -192,8 +252,6 @@ namespace Repository.Repository
             {
                 throw new Exception(ex.Message);
             }
-        }
-
-      
+        }     
     }
 }
