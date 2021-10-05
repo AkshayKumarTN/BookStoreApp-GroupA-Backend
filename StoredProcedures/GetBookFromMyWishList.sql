@@ -1,4 +1,4 @@
-CREATE PROCEDURE [dbo].[GetBookFromMyWishList]
+Alter PROCEDURE [dbo].[GetBookFromMyWishList]
 	@UserId int
 AS
 BEGIN

@@ -1,4 +1,4 @@
-create PROCEDURE GetMyOrders
+Alter PROCEDURE GetMyOrders
 	@UserId int
 AS
 BEGIN
@@ -7,5 +7,5 @@ BEGIN
 	Books.AuthorName,Books.BookImage,Books.BookId 
 	from 
 	MyOrders inner join Books on MyOrders.BookId = Books.BookId
-	where MyOrders.UserId = 1;
+	where MyOrders.UserId = @UserId;
 END

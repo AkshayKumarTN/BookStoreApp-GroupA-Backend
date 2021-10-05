@@ -85,4 +85,11 @@ create table AddFeedBack(
     FOREIGN KEY (BookId) references  [Books](BookId)
   )
 
+--------------------------------Admin------------------------------------
+create Table Admin
+(
+  AdminId INT PRIMARY KEY IDENTITY(1,1),
+  EmailId varchar(50) NOT NULL,
+  Password varchar(50) NOT NULL
+);
 

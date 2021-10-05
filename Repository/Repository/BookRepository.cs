@@ -278,16 +278,24 @@ namespace Repository.Repository
         {
             try
             {
-                CloudinaryDotNet.Account account = new CloudinaryDotNet.Account(this.Configuration["CloudinaryAccount:CloudName"], this.Configuration["CloudinaryAccount:ApiKey"], this.Configuration["CloudinaryAccount:ApiSecret"]);
+                if (image != null)
+                {
+                    CloudinaryDotNet.Account account = new CloudinaryDotNet.Account(this.Configuration["CloudinaryAccount:CloudName"], this.Configuration["CloudinaryAccount:ApiKey"], this.Configuration["CloudinaryAccount:ApiSecret"]);
                     Cloudinary cloudinary = new Cloudinary(account);
                     ImageUploadParams uploadParams = new ImageUploadParams()
                     {
                         File = new FileDescription(image.FileName, image.OpenReadStream())
                     };
                     var uploadResult = cloudinary.Upload(uploadParams);
-                     var returnImage = uploadResult.Url.ToString();
+                    var returnImage = uploadResult.Url.ToString();
                     return returnImage;
+                }
+                else
+                {
+                    return "update";
+                }
             }
+
             catch (ArgumentNullException ex)
             {
                 throw new Exception(ex.Message);

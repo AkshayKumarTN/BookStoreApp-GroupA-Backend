@@ -55,8 +55,12 @@ namespace BookStoreApp.Controllers
                 var result = this.manager.Register(userData);
                 if (result != null)
                 {
+<<<<<<< HEAD
                     this.logger.LogInformation(userData.FullName + " Is Registered Successfully");
                     return this.Ok(new ResponseModel<RegisterModel>() { Status = true, Message = "Registration Successfull!", Data = result });
+=======
+                    return this.Ok(new ResponseModel<RegisterModel>() { Status = true, Message = "Registration Successfull!", Data= result  });
+>>>>>>> a3e490a5f9dd183829f6b25fdaf025910a385a43
                 }
                 else
                 {
