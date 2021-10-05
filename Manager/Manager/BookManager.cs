@@ -88,5 +88,22 @@ namespace Manager.Manager
                 throw new Exception(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Remove Book 
+        /// </summary>
+        /// <param name="bookId">passing a bookId as integer</param>
+        /// <returns>Returns true or false</returns>
+        public bool RemoveBook(int bookId)
+        {
+            try
+            {
+                return this.repository.RemoveBook(bookId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

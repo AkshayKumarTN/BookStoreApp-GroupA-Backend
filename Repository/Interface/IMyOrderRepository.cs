@@ -13,13 +13,12 @@ namespace Repository.Interface
     /// </summary>
     public interface IMyOrderRepository
     {
-
         /// <summary>
         /// Adds the order.
         /// </summary>
         /// <param name="orderData">The order data.</param>
-        /// <returns>Returns get my order model</returns>
-       List<int> AddOrder(List<MyOrdersModel> orderData);
+        /// <returns>Returns the order Id</returns>
+        GetMyOrdersModel AddOrder(MyOrdersModel orderData);
 
         /// <summary>
         /// Gets my orders.

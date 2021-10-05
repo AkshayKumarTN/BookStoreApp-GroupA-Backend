@@ -39,17 +39,17 @@ namespace BookStoreApps.Controllers
         /// Adds the order.
         /// </summary>
         /// <param name="orderData">The order data.</param>
-        /// <returns>Return message and Status</returns>
+        /// <returns>Return message and Status and Order Id</returns>
         [HttpPost]
         [Route("Order")]
-        public IActionResult AddOrder([FromBody] List<MyOrdersModel> orderData)
+        public IActionResult AddOrder([FromBody] MyOrdersModel orderData)
         {
             try
             {
-                List<int> result = this.manager.AddOrder(orderData);
+              var result = this.manager.AddOrder(orderData);
                 if (result != null)
                 {
-                    return this.Ok(new { Status = true, Message = "Order Added Successfully", result });
+                    return this.Ok(new { Status = true, Message = "Order Added Successfully", result.OrderId });
                 }
                 else
                 {

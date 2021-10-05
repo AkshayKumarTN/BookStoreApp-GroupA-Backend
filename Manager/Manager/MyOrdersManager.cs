@@ -30,18 +30,15 @@ namespace Manager.Manager
             this.repository = repository;
         }
 
-
-        
-
         /// <summary>
         /// Adds the order.
         /// </summary>
         /// <param name="orderData">The order data.</param>
         /// <returns>
-        /// Returns get my order model
+        /// Returns get the Order Id
         /// </returns>
         /// <exception cref="System.Exception">Returns exception message</exception>
-       public List<int> AddOrder(List<MyOrdersModel> orderData)
+       public GetMyOrdersModel AddOrder(MyOrdersModel orderData)
         {
             try
             {

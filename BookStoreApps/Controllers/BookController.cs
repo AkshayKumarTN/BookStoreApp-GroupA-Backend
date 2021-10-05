@@ -112,5 +112,32 @@ namespace BookStoreApps.Controllers
                 return this.NotFound(new ResponseModel<string>() { Status = false, Message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Remove the book
+        /// </summary>
+        /// <param name="bookId">passing a bookId as integer</param>
+        /// <returns>Returns Status and message</returns>
+        [HttpDelete]
+        [Route("Book")]
+        public IActionResult RemoveBook(int bookId)
+        {
+            try
+            {
+                var result = this.manager.RemoveBook(bookId);
+                if (result == true)
+                {
+                    return this.Ok(new ResponseModel<string>() { Status = true, Message = "Book Removed Successfully!" });
+                }
+                else
+                {
+                    return this.BadRequest(new ResponseModel<string>() { Status = false, Message = "Remove Book UnSuccessfully!" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return this.NotFound(new ResponseModel<string>() { Status = false, Message = ex.Message });
+            }
+        }
     }
 }

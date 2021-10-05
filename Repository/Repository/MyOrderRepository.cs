@@ -40,50 +40,45 @@ namespace Repository.Repository
         /// The configuration.
         /// </value>
         public IConfiguration Configuration { get; }
-
-
-        public List<int> AddOrder(List<MyOrdersModel> orderdata)
-
+        
+        /// <summary>
+        /// Add Order API
+        /// </summary>
+        /// <param name="orderData">passing a MyOrders model </param>
+        /// <returns>Returns a order Id</returns>
+        public GetMyOrdersModel AddOrder(MyOrdersModel orderData)
         {
             try
             {
-                List<int> result = new List<int>();
-                if (orderdata != null)
+                if (orderData != null)
                 {
                     this.connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
                     using (this.connection)
+                    {
+                        this.connection.Open();
+                        SqlCommand cmd = new SqlCommand("AddOrder", this.connection);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@UserId", orderData.UserId);
+                        cmd.Parameters.AddWithValue("@BookId", orderData.BookId);
+                        cmd.Parameters.AddWithValue("@AddressId", orderData.AddressId);
+                        cmd.Parameters.AddWithValue("@OrderDate", orderData.OrderDate);
+                        cmd.Parameters.AddWithValue("@TotalCost", orderData.TotalCost);
+                        SqlDataReader sqlDataReader = cmd.ExecuteReader();
+                        GetMyOrdersModel getMyOrders = new GetMyOrdersModel();
 
-                        foreach (var orderData in orderdata)
+                        if (sqlDataReader.Read())
                         {
-                            connection.Open();
-                            SqlCommand cmd = new SqlCommand("AddOrder", connection);
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@UserId", orderData.UserId);
-                            cmd.Parameters.AddWithValue("@BookId", orderData.BookId);
-                            cmd.Parameters.AddWithValue("@AddressId", orderData.AddressId);
-                            cmd.Parameters.AddWithValue("@OrderDate", orderData.OrderDate);
-                            cmd.Parameters.AddWithValue("@TotalCost", orderData.TotalCost);
-                            SqlDataReader sqlDataReader = cmd.ExecuteReader();
-                            GetMyOrdersModel getMyOrders = new GetMyOrdersModel();
-                            if (sqlDataReader.HasRows)
-                            {
-                                while (sqlDataReader.Read())
-                                {
-                                    getMyOrders.OrderId = Convert.ToInt32(sqlDataReader["OrderId"]);
-                                    result.Add(getMyOrders.OrderId);
-                                }
-                                connection.Close();
-                            }
-                            //if (sqlDataReader.HasRows == false)
-                            //{
-                            //throw new Exception("Order not placed");
-                            //}
+                            getMyOrders.OrderId = Convert.ToInt32(sqlDataReader["OrderId"]);
                         }
-                        return result;
 
-                        
+                        if (sqlDataReader.HasRows == false)
+                        {
+                            throw new Exception("No Order Placed");
+                        }
+
+                        return getMyOrders;
                     }
-                
+                }
 
                 return null;
             }

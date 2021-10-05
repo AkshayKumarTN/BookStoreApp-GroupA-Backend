@@ -229,6 +229,46 @@ namespace Repository.Repository
         }
 
         /// <summary>
+        /// Remove book 
+        /// </summary>
+        /// <param name="bookId">passing a bookId as integer</param>
+        /// <returns>Returns true or false</returns>
+        public bool RemoveBook(int bookId)
+        {
+            try
+            {
+                if (bookId != 0)
+                {
+                    this.connection = new SqlConnection(this.Configuration["ConnectionStrings:DbConnection"]);
+                    using (this.connection)
+                    {
+                        this.connection.Open();
+                        SqlCommand cmd = new SqlCommand("[dbo].[RemoveBook]", this.connection);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@BookId", bookId);
+                        int result = cmd.ExecuteNonQuery();
+                        if (result != 0)
+                        {
+                            return true;
+                        }
+
+                        return false;
+                    }
+                }
+
+                return false;
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                this.connection.Close();
+            }
+        }
+
+        /// <summary>
         /// Adds the image.
         /// </summary>
         /// <param name="image">The image.</param>
@@ -252,6 +292,6 @@ namespace Repository.Repository
             {
                 throw new Exception(ex.Message);
             }
-        }     
+        }
     }
 }

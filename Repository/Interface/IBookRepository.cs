@@ -30,5 +30,7 @@ namespace Repository.Interface
         /// <returns>Returns list of book model</returns>
         List<BookModel> GetBooks();
 
+        bool RemoveBook(int bookId);
+
     }
 }

@@ -31,6 +31,13 @@ namespace Manager.Interface
         /// Gets the books.
         /// </summary>
         /// <returns>Returns list of book model</returns>
-        List<BookModel> GetBooks();      
+        List<BookModel> GetBooks();
+
+        /// <summary>
+        /// Remove Book 
+        /// </summary>
+        /// <param name="bookId">passing a bookId</param>
+        /// <returns>Returns true or false</returns>
+        bool RemoveBook(int bookId);
     }
 }

@@ -13,13 +13,12 @@ namespace Manager.Interface
     /// </summary>
     public interface IMyOrdersManager
     {
-
         /// <summary>
         /// Adds the order.
         /// </summary>
         /// <param name="orderData">The order data.</param>
-        /// <returns>Returns get my order model</returns>
-         List<int> AddOrder(List<MyOrdersModel> orderData);
+        /// <returns>Returns get my order id</returns>
+        GetMyOrdersModel AddOrder(MyOrdersModel orderData);
 
         /// <summary>
         /// Gets my orders.
