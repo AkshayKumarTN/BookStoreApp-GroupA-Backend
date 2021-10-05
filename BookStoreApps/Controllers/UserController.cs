@@ -8,6 +8,7 @@ namespace BookStoreApp.Controllers
     using System;
     using Manager.Interface;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using Models;
 
     /// <summary>
@@ -27,9 +28,16 @@ namespace BookStoreApp.Controllers
         /// Initializes a new instance of the <see cref="UserController"/> class.
         /// </summary>
         /// <param name="manager">The manager.</param>
-        public UserController(IUserManager manager)
+
+        /// <summary>
+        /// instance for logger
+        /// </summary>
+        private readonly ILogger<UserController> logger;
+
+        public UserController(IUserManager manager, ILogger<UserController> logger)
         {
             this.manager = manager;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -43,18 +51,22 @@ namespace BookStoreApp.Controllers
         {
             try
             {
+                this.logger.LogInformation("API For Registration for Accessing Book Store Application");
                 var result = this.manager.Register(userData);
                 if (result != null)
                 {
+                    this.logger.LogInformation(userData.FullName + " Is Registered Successfully");
                     return this.Ok(new ResponseModel<RegisterModel>() { Status = true, Message = "Registration Successfull!", Data = result });
                 }
                 else
                 {
+                    this.logger.LogWarning("Registration Unsuccesfull");
                     return this.BadRequest(new ResponseModel<string>() { Status = false, Message = "Registration Unsuccessfull!" });
                 }
             }
             catch (Exception ex)
             {
+                this.logger.LogError("Exception Occured While Register " + ex.Message);
                 return this.NotFound(new ResponseModel<string>() { Status = false, Message = ex.Message });
             }
         }
@@ -68,21 +80,26 @@ namespace BookStoreApp.Controllers
         [Route("Login")]
         public IActionResult Login([FromBody] LoginModel loginData)
         {
+            this.logger.LogInformation("API For Login to access the books");
             try
             {
+                this.logger.LogInformation(loginData.EmailId + " Is Logging ");
                 var result = this.manager.Login(loginData);
                 string tokenString = this.manager.GenerateToken(loginData.EmailId);
                 if (result != null)
                 {
+                    this.logger.LogInformation(loginData.EmailId + " Logged Successfully");
                     return this.Ok(new { Status = true, Message = "Login Successful!!!", Token = tokenString, Data = result });
                 }
                 else
                 {
+                    this.logger.LogWarning("Login Unsuccessfull");
                     return this.BadRequest(new ResponseModel<string>() { Status = false, Message = "Login Unsuccessfull!" });
                 }
             }
             catch (Exception ex)
             {
+                this.logger.LogError("Exception Occured While log in " + ex.Message);
                 return this.NotFound(new ResponseModel<string>() { Status = false, Message = ex.Message });
             }
         }
@@ -96,6 +113,7 @@ namespace BookStoreApp.Controllers
         [Route("ForgotPassword")]
         public IActionResult ForgotPassword(string email)
         {
+            this.logger.LogInformation("API For Forgot Password ");
             try
             {
                 var result = this.manager.ForgotPassword(email);
@@ -123,20 +141,25 @@ namespace BookStoreApp.Controllers
         [Route("ResetPassword")]
         public IActionResult ResetPassword([FromBody] ResetPasswordModel resetData)
         {
+            this.logger.LogInformation("API For Reset Passoword");
             try
             {
+                this.logger.LogInformation(resetData.UserId + " Is trying to reset the password");
                 var result = this.manager.ResetPassword(resetData);
                 if (result)
                 {
+                    this.logger.LogInformation(resetData.UserId + " Reseted Password Successfully");
                     return this.Ok(new ResponseModel<RegisterModel>() { Status = true, Message = "Reset Successfull!" });
                 }
                 else
                 {
+                    this.logger.LogWarning("Not Reseted Passowrd Successfully");
                     return this.BadRequest(new ResponseModel<string>() { Status = false, Message = "Reset Unsuccessfull!" });
                 }
             }
             catch (Exception ex)
             {
+                this.logger.LogError("Exception Occured While in Reset the password " + ex.Message);
                 return this.NotFound(new ResponseModel<string>() { Status = false, Message = ex.Message });
             }
         }
