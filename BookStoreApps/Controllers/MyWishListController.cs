@@ -44,7 +44,7 @@ namespace BookStoreApps.Controllers
         }
 
         [HttpGet]
-        [Route("api/Book")]
+        [Route("WishList")]
         public IActionResult GetBookFromMyWishList(int userId)
         {
             try
@@ -65,7 +65,7 @@ namespace BookStoreApps.Controllers
             }
         }
         [HttpDelete]
-        [Route("api/Book")]
+        [Route("WishList")]
         public IActionResult RemoveBookFromMyWishList(int myWishListId)
         {
             try

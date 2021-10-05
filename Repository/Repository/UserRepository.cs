@@ -36,7 +36,7 @@ namespace Repository.Repository
                             connection.Open();
                             SqlCommand cmd = new SqlCommand("Registration", connection);
                             cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@UserName", userData.FullName);
+                            cmd.Parameters.AddWithValue("@FullName", userData.FullName);
                             cmd.Parameters.AddWithValue("@EmailId", userData.EmailId);
                             cmd.Parameters.AddWithValue("@Password", EncryptPassWord(userData.Password));
                             cmd.Parameters.AddWithValue("@MobileNumber", userData.MobileNumber);
@@ -89,14 +89,27 @@ namespace Repository.Repository
                         SqlDataReader sqlDataReader = cmd.ExecuteReader();
 
                         RegisterModel registerModel = new RegisterModel();
-                        if (sqlDataReader.Read())
+                        if(loginData.EmailId=="admin@gmail.com")
                         {
-                            registerModel.UserId = Convert.ToInt32(sqlDataReader["UserId"]);
-                            registerModel.FullName = sqlDataReader["FullName"].ToString();
-                            registerModel.EmailId = sqlDataReader["EmailId"].ToString();
-                            registerModel.MobileNumber = sqlDataReader["MobileNumber"].ToString();
-                            registerModel.Password = sqlDataReader["Password"].ToString();
+                            if (sqlDataReader.Read())
+                            {
+                                registerModel.UserId = Convert.ToInt32(sqlDataReader["AdminId"]);
+                                registerModel.EmailId = sqlDataReader["EmailId"].ToString();
+                                registerModel.Password = sqlDataReader["Password"].ToString();
+                            }
                         }
+                        else
+                        {
+                            if (sqlDataReader.Read())
+                            {
+                                registerModel.UserId = Convert.ToInt32(sqlDataReader["UserId"]);
+                                registerModel.FullName = sqlDataReader["FullName"].ToString();
+                                registerModel.EmailId = sqlDataReader["EmailId"].ToString();
+                                registerModel.MobileNumber = sqlDataReader["MobileNumber"].ToString();
+                                registerModel.Password = sqlDataReader["Password"].ToString();
+                            }
+                        }
+                       
                         if (sqlDataReader.HasRows == false)
                         {
                             throw new Exception("EmailId does not exist");

@@ -24,6 +24,6 @@ if( (select count(BookId) from Books where BookId = @BookId and BookQuantity > @
 				insert into MyOrders(UserId, BookId, AddressId,OrderDate,TotalCost) 
 				values(@UserId, @BookId,@AddressId,@OrderDate,@TotalCost);
 				update Books set BookQuantity=@TotalBookCount-@BookCount where BookId = @BookId;
-				select OrderId from MyOrders where BookId=@BookId and UserId = @UserId;
+				select OrderId from MyOrders where BookId=@BookId and UserId = @UserId and AddressId=@AddressId Order By OrderId desc;
 		End
 END
