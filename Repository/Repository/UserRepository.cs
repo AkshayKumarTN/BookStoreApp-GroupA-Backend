@@ -78,28 +78,8 @@ namespace Repository.Repository
                         var result = (int)returnedSQLParameter.Value;
                         if (result == 1)
                         {
-<<<<<<< HEAD
                             //userData.Password = null;
                             return userData;
-=======
-                            connection.Open();
-                            SqlCommand cmd = new SqlCommand("Registration", connection);
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@FullName", userData.FullName);
-                            cmd.Parameters.AddWithValue("@EmailId", userData.EmailId);
-                            cmd.Parameters.AddWithValue("@Password", EncryptPassWord(userData.Password));
-                            cmd.Parameters.AddWithValue("@MobileNumber", userData.MobileNumber);
-                            var returnedSQLParameter = cmd.Parameters.Add("@result", SqlDbType.Int);
-                            returnedSQLParameter.Direction = ParameterDirection.Output;
-                           cmd.ExecuteNonQuery();
-                           var result = (int)returnedSQLParameter.Value;
-                           if (result == 1)
-                            {
-                                //userData.Password = null;
-                                return userData;
-                            }
-                            return null;
->>>>>>> a3e490a5f9dd183829f6b25fdaf025910a385a43
                         }
                         return null;
                     }
@@ -179,11 +159,6 @@ namespace Repository.Repository
                                 registerModel.Password = sqlDataReader["Password"].ToString();
                             }
                         }
-<<<<<<< HEAD
-
-=======
-                       
->>>>>>> a3e490a5f9dd183829f6b25fdaf025910a385a43
                         if (sqlDataReader.HasRows == false)
                         {
                             throw new Exception("EmailId does not exist");

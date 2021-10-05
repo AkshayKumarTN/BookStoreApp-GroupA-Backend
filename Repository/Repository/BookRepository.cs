@@ -130,7 +130,7 @@ namespace Repository.Repository
                             cmd.Parameters.AddWithValue("@Rating", bookData.Rating);
                             cmd.Parameters.AddWithValue("@BookDetail", bookData.BookDetail);
                             cmd.Parameters.AddWithValue("@BookImage", bookImage);
-                            cmd.Parameters.AddWithValue("@BookImage", bigImage);
+                            cmd.Parameters.AddWithValue("@BigImage", bigImage);
                             cmd.Parameters.AddWithValue("@BookQuantity", bookData.BookQuantity);
                             SqlDataReader sqlDataReader = cmd.ExecuteReader();
                             BookModel book = new BookModel();
@@ -144,7 +144,7 @@ namespace Repository.Repository
                                     book.Rating = Convert.ToInt32(sqlDataReader["Rating"]);
                                     book.BookDetail = sqlDataReader["BookDetail"].ToString();
                                     book.BookImage = sqlDataReader["BookImage"].ToString();
-                                book.BigImage = sqlDataReader["BigImage"].ToString();
+                                    book.BigImage = sqlDataReader["BigImage"].ToString();
                                     book.BookQuantity = Convert.ToInt32(sqlDataReader["BookQuantity"]);
                                 }
                             }
@@ -295,7 +295,6 @@ namespace Repository.Repository
                     return "update";
                 }
             }
-
             catch (ArgumentNullException ex)
             {
                 throw new Exception(ex.Message);
