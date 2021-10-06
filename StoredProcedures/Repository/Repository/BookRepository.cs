@@ -130,7 +130,7 @@ namespace Repository.Repository
                             cmd.Parameters.AddWithValue("@Rating", bookData.Rating);
                             cmd.Parameters.AddWithValue("@BookDetail", bookData.BookDetail);
                             cmd.Parameters.AddWithValue("@BookImage", bookImage);
-                            cmd.Parameters.AddWithValue("@BigImage", bigImage);
+                            cmd.Parameters.AddWithValue("@BigBookImage", bigImage);
                             cmd.Parameters.AddWithValue("@BookQuantity", bookData.BookQuantity);
                             SqlDataReader sqlDataReader = cmd.ExecuteReader();
                             BookModel book = new BookModel();
