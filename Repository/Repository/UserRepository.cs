@@ -78,10 +78,16 @@ namespace Repository.Repository
                         var result = (int)returnedSQLParameter.Value;
                         if (result == 1)
                         {
-                            //userData.Password = null;
                             return userData;
                         }
-                        return null;
+                       else if(result==2)
+                        {
+                            throw new Exception("Email Id already exist");
+                        }
+                        else if(result==0)
+                        {
+                            throw new Exception("Some exception has occured");
+                        }
                     }
                 }
 
