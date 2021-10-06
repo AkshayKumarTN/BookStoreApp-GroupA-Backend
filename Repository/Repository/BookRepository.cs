@@ -65,25 +65,25 @@ namespace Repository.Repository
                     using (this.connection)
                     {
                         this.connection.Open();
-                            SqlCommand cmd = new SqlCommand("[dbo].[InsertBookData]", this.connection);
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@Title", bookData.Title);
-                            cmd.Parameters.AddWithValue("@AuthorName", bookData.AuthorName);
-                            cmd.Parameters.AddWithValue("@Price", bookData.Price);
-                            cmd.Parameters.AddWithValue("@Rating", bookData.Rating);
-                            cmd.Parameters.AddWithValue("@BookDetail", bookData.BookDetail);
-                            cmd.Parameters.AddWithValue("@BookImage", bookImage);
+                        SqlCommand cmd = new SqlCommand("[dbo].[InsertBookData]", this.connection);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Title", bookData.Title);
+                        cmd.Parameters.AddWithValue("@AuthorName", bookData.AuthorName);
+                        cmd.Parameters.AddWithValue("@Price", bookData.Price);
+                        cmd.Parameters.AddWithValue("@Rating", bookData.Rating);
+                        cmd.Parameters.AddWithValue("@BookDetail", bookData.BookDetail);
+                        cmd.Parameters.AddWithValue("@BookImage", bookImage);
                         cmd.Parameters.AddWithValue("@BigImage", bigImage);
                         cmd.Parameters.AddWithValue("@BookQuantity", bookData.BookQuantity);
-                            int result = cmd.ExecuteNonQuery();
-                            if (result != 0)
-                            {
-                                return true;
-                            }
-
-                            return false;
+                        int result = cmd.ExecuteNonQuery();
+                        if (result != 0)
+                        {
+                            return true;
                         }
+
+                        return false;
                     }
+                }
                 
                 return false;
             }
