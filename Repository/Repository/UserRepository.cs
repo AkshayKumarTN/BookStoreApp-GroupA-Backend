@@ -136,7 +136,7 @@ namespace Repository.Repository
                     using (this.connection)
                     {
                         this.connection.Open();
-                        SqlCommand cmd = new SqlCommand("Login", this.connection)
+                        SqlCommand cmd = new SqlCommand("AdminLogin", this.connection)
                         {
                             CommandType = CommandType.StoredProcedure
                         };
@@ -145,17 +145,25 @@ namespace Repository.Repository
               
                         SqlDataReader sqlDataReader = cmd.ExecuteReader();
                         RegisterModel registerModel = new RegisterModel();
-                        if(loginData.EmailId=="admin@gmail.com")
-                        {
                             if (sqlDataReader.Read())
                             {
                                 registerModel.UserId = Convert.ToInt32(sqlDataReader["AdminId"]);
                                 registerModel.EmailId = sqlDataReader["EmailId"].ToString();
                                 registerModel.Password = sqlDataReader["Password"].ToString();
                             }
-                        }
-                        else
+                        if (sqlDataReader.HasRows == false)
                         {
+                            this.connection.Close();
+                            this.connection.Open();
+                            SqlCommand cmds = new SqlCommand("Login", this.connection)
+                            {
+                                CommandType = CommandType.StoredProcedure
+                            };
+                            cmds.Parameters.AddWithValue("@EmailId", loginData.EmailId);
+                            cmds.Parameters.AddWithValue("@Password", this.EncryptPassWord(loginData.Password));
+
+                            sqlDataReader = cmds.ExecuteReader();
+
                             if (sqlDataReader.Read())
                             {
                                 registerModel.UserId = Convert.ToInt32(sqlDataReader["UserId"]);
