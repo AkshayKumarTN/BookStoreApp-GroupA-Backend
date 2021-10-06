@@ -128,6 +128,7 @@ namespace Repository.Repository
         /// </exception>
         public RegisterModel Login(LoginModel loginData)
         {
+            //int result = 0;
             try
             {
                 if (loginData != null)
@@ -142,7 +143,12 @@ namespace Repository.Repository
                         };
                         cmd.Parameters.AddWithValue("@EmailId", loginData.EmailId);
                         cmd.Parameters.AddWithValue("@Password", this.EncryptPassWord(loginData.Password));
+                        var returnedSQLParameter = cmd.Parameters.Add("@result", SqlDbType.Int);
+                        returnedSQLParameter.Direction = ParameterDirection.Output;
+
                         SqlDataReader sqlDataReader = cmd.ExecuteReader();
+                        var result = (int)returnedSQLParameter.Value;
+                       
 
                         RegisterModel registerModel = new RegisterModel();
                         if(loginData.EmailId=="admin@gmail.com")
@@ -165,14 +171,19 @@ namespace Repository.Repository
                                 registerModel.Password = sqlDataReader["Password"].ToString();
                             }
                         }
-                        if (sqlDataReader.HasRows == false)
+                        //if (sqlDataReader.HasRows == false)
+                        if(result==1)
                         {
                             throw new Exception("EmailId does not exist");
                         }
-                        else if (registerModel.Password != this.EncryptPassWord(loginData.Password))
+                        else if(result==3)
                         {
                             throw new Exception("Password does not match");
                         }
+                        //else if (registerModel.Password != this.EncryptPassWord(loginData.Password))
+                        //{
+                          //  throw new Exception("Password does not match");
+                        //}
 
                         return registerModel;
                     }
