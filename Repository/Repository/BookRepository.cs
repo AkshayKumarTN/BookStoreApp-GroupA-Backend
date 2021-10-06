@@ -121,43 +121,33 @@ namespace Repository.Repository
                     using (this.connection)
                     {
                         this.connection.Open();
-                            SqlCommand cmd = new SqlCommand("[dbo].[UpdateBookData]", this.connection);
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@BookId", bookData.BookId);
-                            cmd.Parameters.AddWithValue("@Title", bookData.Title);
-                            cmd.Parameters.AddWithValue("@AuthorName", bookData.AuthorName);
-                            cmd.Parameters.AddWithValue("@Price", bookData.Price);
-                            cmd.Parameters.AddWithValue("@Rating", bookData.Rating);
-                            cmd.Parameters.AddWithValue("@BookDetail", bookData.BookDetail);
-                            cmd.Parameters.AddWithValue("@BookImage", bookImage);
-                            cmd.Parameters.AddWithValue("@BigBookImage", bigImage);
-                            cmd.Parameters.AddWithValue("@BookQuantity", bookData.BookQuantity);
-                            SqlDataReader sqlDataReader = cmd.ExecuteReader();
-                            BookModel book = new BookModel();
-                            if (sqlDataReader.Read())
-                            {
-                                {
-                                    book.BookId = Convert.ToInt32(sqlDataReader["BookId"]);
-                                    book.Title = sqlDataReader["Title"].ToString();
-                                    book.AuthorName = sqlDataReader["AuthorName"].ToString();
-                                    book.Price = Convert.ToInt32(sqlDataReader["Price"]);
-                                    book.Rating = Convert.ToInt32(sqlDataReader["Rating"]);
-                                    book.BookDetail = sqlDataReader["BookDetail"].ToString();
-                                    book.BookImage = sqlDataReader["BookImage"].ToString();
-                                    book.BigImage = sqlDataReader["BigImage"].ToString();
-                                    book.BookQuantity = Convert.ToInt32(sqlDataReader["BookQuantity"]);
-                                }
-                            }
+                        SqlCommand cmd = new SqlCommand("[dbo].[UpdateBookData]", this.connection);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@BookId", bookData.BookId);
+                        cmd.Parameters.AddWithValue("@Title", bookData.Title);
+                        cmd.Parameters.AddWithValue("@AuthorName", bookData.AuthorName);
+                        cmd.Parameters.AddWithValue("@Price", bookData.Price);
+                        cmd.Parameters.AddWithValue("@Rating", bookData.Rating);
+                        cmd.Parameters.AddWithValue("@BookDetail", bookData.BookDetail);
+                        cmd.Parameters.AddWithValue("@BookImage", bookImage);
+                        cmd.Parameters.AddWithValue("@BigBookImage", bigImage);
+                        cmd.Parameters.AddWithValue("@BookQuantity", bookData.BookQuantity);
+                        var returnedSQLParameter = cmd.Parameters.Add("@result", SqlDbType.Int);
+                        returnedSQLParameter.Direction = ParameterDirection.Output;
+                        cmd.ExecuteNonQuery();
+                        var result = (int)returnedSQLParameter.Value;
 
-                            if (sqlDataReader.HasRows == false)
-                            {
-                                throw new Exception("BookId does not exist");
-                            }
-
+                        if (result == 1)
+                        {
                             return true;
                         }
+                        else
+                        {
+                            return false;
+                        }
                     }
-                
+                }
+
                 return false;
             }
             catch (ArgumentNullException ex)
