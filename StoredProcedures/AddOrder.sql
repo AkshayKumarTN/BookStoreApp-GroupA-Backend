@@ -12,7 +12,8 @@ ALTER PROCEDURE [dbo].[AddOrder]
 	@OrderDate varchar(20),
 	@TotalCost int
 	AS
-BEGIN
+BEGIN TRY 
+BEGIN TRANSACTION
     DECLARE @BookPrice int = 0;
 	DECLARE @BookCount int =1;
 	DECLARE @TotalBookCount int = 1;
@@ -26,4 +27,14 @@ if( (select count(BookId) from Books where BookId = @BookId and BookQuantity > @
 				update Books set BookQuantity=@TotalBookCount-@BookCount where BookId = @BookId;
 				select OrderId from MyOrders where BookId=@BookId and UserId = @UserId and AddressId=@AddressId Order By OrderId desc;
 		End
-END
+	COMMIT TRANSACTION
+END TRY
+ BEGIN CATCH
+ -- Transaction uncommittable
+    IF (XACT_STATE()) = -1
+      ROLLBACK TRANSACTION
+ 
+-- Transaction committable
+    IF (XACT_STATE()) = 1
+      COMMIT TRANSACTION
+  END CATCH
