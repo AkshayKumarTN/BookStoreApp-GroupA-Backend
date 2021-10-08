@@ -236,13 +236,19 @@ namespace Repository.Repository
                         SqlCommand cmd = new SqlCommand("[dbo].[RemoveBook]", this.connection);
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@BookId", bookId);
-                        int result = cmd.ExecuteNonQuery();
-                        if (result != 0)
+                        var returnedSQLParameter = cmd.Parameters.Add("@result", SqlDbType.Int);
+                        returnedSQLParameter.Direction = ParameterDirection.Output;
+                        cmd.ExecuteNonQuery();
+                        var result = (int)returnedSQLParameter.Value;
+
+                        if (result == 1)
                         {
                             return true;
                         }
-
-                        return false;
+                        else if (result == 2)
+                        {
+                            return false;
+                        }
                     }
                 }
 

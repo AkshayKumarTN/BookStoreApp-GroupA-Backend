@@ -73,3 +73,13 @@
 2021-10-06 17:10:01.0984 Info Adding target FileTarget(Name=alldata)
 2021-10-06 17:10:01.1237 Info Adding target FileTarget(Name=otherFile-web)
 2021-10-06 17:10:01.2217 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=C:\Users\akshay.t\Desktop\BookStore\kk\BookStoreApp-GroupA-Backend\BookStoreApps\bin\Debug\netcoreapp3.1\nlog.config
+2021-10-07 08:05:19.5040 Info Message Template Auto Format enabled
+2021-10-07 08:05:19.5929 Info Loading assembly: NLog.Web.AspNetCore
+2021-10-07 08:05:19.8916 Info Adding target FileTarget(Name=alldata)
+2021-10-07 08:05:19.9582 Info Adding target FileTarget(Name=otherFile-web)
+2021-10-07 08:05:20.1108 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=C:\Users\radhika.s\source\repos\Boookk4\BookStoreApp-GroupA-Backend\BookStoreApps\bin\Debug\netcoreapp3.1\nlog.config
+2021-10-08 07:50:42.5143 Info Message Template Auto Format enabled
+2021-10-08 07:50:42.6310 Info Loading assembly: NLog.Web.AspNetCore
+2021-10-08 07:50:42.8760 Info Adding target FileTarget(Name=alldata)
+2021-10-08 07:50:42.9805 Info Adding target FileTarget(Name=otherFile-web)
+2021-10-08 07:50:43.1558 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=C:\Users\radhika.s\source\repos\Boookk4\BookStoreApp-GroupA-Backend\BookStoreApps\bin\Debug\netcoreapp3.1\nlog.config
